@@ -15,9 +15,9 @@ library(gridExtra)
 library(pROC)
 library(ggplot2)
 
-rsconnect::setAccountInfo(name='miguelcrr',
-                          token='E1B49D074B1F1B05486F111185543A6B',
-                          secret='OZR2sGXXGOix1CN6wS0q8lhp8yeHlBnhnBnMTzyN')
+rsconnect::setAccountInfo(name='user',
+                          token='token',
+                          secret='secret')
 
 server <- function(input, output, session) {
   
