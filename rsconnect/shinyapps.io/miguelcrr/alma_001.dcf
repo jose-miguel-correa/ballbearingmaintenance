@@ -1,11 +1,11 @@
 name: alma_001
-title: alma_001
+title: ballbearingmaintenance
 username: miguelcrr
 account: miguelcrr
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 13542925
-bundleId: 9475973
+bundleId: 9495154
 url: https://miguelcrr.shinyapps.io/alma_001/
 version: 1
 asMultiple: FALSE

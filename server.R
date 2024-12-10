@@ -70,6 +70,27 @@ server <- function(input, output, session) {
     })
   })
   
+  # Create folder
+  models_dir <- "models"
+  if (!dir.exists(models_dir)) dir.create(models_dir)
+  
+  # Reactive value to track the available models
+  available_models <- reactiveVal({
+    list.files(models_dir, pattern = "\\.rds$", full.names = FALSE)
+  })
+  
+  # Save the current xgboost model
+  observeEvent(input$saveModelBtn, {
+    req(model()) # Ensure a model exists
+    model_name <- paste0("model_", Sys.Date(), "_", Sys.time(), ".rds")
+    model_path <- file.path(models_dir, model_name)
+    saveRDS(model(), model_path)
+    available_models(list.files(models_dir, pattern = "\\.rds$", full.names = FALSE))
+    updateSelectInput(session, "selectedModel", choices = available_models(), selected = model_name)
+    showNotification("Model saved successfully!", type = "message")
+  })
+  
+  # Plotear importancia de las características
   output$feature_importance_plot <- renderPlot({
     req(model())
     importance_matrix <- xgb.importance(model = model())
@@ -365,6 +386,52 @@ output$modelOutput <- render_gt({
   })
   
   
+  # Update the dropdown menu with available models
+  output$modelDropdown <- renderUI({
+    selectInput("selectedModel", "Select a Model:", 
+                choices = available_models(), 
+                selected = NULL)
+  })
   
+  # Delete the selected model
+  observeEvent(input$deleteModelBtn, {
+    req(input$selectedModel)  # Ensure a model is selected
+    model_path <- file.path(models_dir, input$selectedModel)
+    if (file.exists(model_path)) {
+      file.remove(model_path)
+      available_models(list.files(models_dir, pattern = "\\.rds$", full.names = FALSE))  # Refresh model list
+      showNotification("Model deleted successfully!", type = "warning")
+    } else {
+      showNotification("Model not found!", type = "error")
+    }
+  })
+  
+  # Load a selected model
+  observeEvent(input$loadModelBtn, {
+    req(input$selectedModel)  # Ensure a model is selected
+    model_path <- file.path(models_dir, input$selectedModel)
+    loaded_model <- readRDS(model_path)
+    model(loaded_model)
+    showNotification("Model loaded successfully!", type = "message")
+  })
+  
+  # Update the dropdown menu with available models
+  observe({
+    updateSelectInput(
+      session,
+      "selectedModel",
+      choices = available_models(),
+      selected = NULL
+    )
+  })
+  
+  output$modelList <- renderTable({
+    data.frame(Model_Name = available_models())
+  })
+  
+  # Display the list of available models in a table
+  output$modelList <- renderTable({
+    data.frame(Model_Name = available_models())
+  })
   
 }

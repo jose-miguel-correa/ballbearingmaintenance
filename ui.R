@@ -77,6 +77,7 @@ fluidPage(
                      actionButton("trainBtn", "Train Model"),
                      uiOutput("waitForModel"),
                      br(),
+                     actionButton("saveModelBtn", "Save Current Model"),
                      uiOutput("modelOutputTitle"),
                      fluidRow(
                       column(5, gt_output("modelOutput"))
@@ -106,7 +107,15 @@ fluidPage(
                      br()
                   
                      
-            )
+            ),
+            tabPanel("Models",
+                     h4("Model Management"),
+                     selectInput("selectedModel", "Select a Model:", choices = NULL),
+                     actionButton("loadModelBtn", "Load Selected Model"),
+                     actionButton("deleteModelBtn", "Delete Selected Model"),
+                     h3("Saved Models:"),
+                     tableOutput("modelList")
+                     )
             
         )
     )
